@@ -1,0 +1,29 @@
+{
+  "name": "anim-to-bvh",
+  "version": "1.0.0",
+  "description": "Anim to BVH converter(mostly for Second Life, including Bento bones). Anim, BVH parsers.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc & webpack",
+    "watch": "tsc --watch"
+  },
+  "author": {
+  	"name": "Gleb Borisov",
+  	"email": "formyfiles3@gmail.com",
+  	"url": "https://marketplace.secondlife.com/en-US/stores/207879"
+  },
+  "repository": {
+  	"type": "git",
+  	"url": "git@github.com:dreamflyer/anim-to-bvh.git"
+  },
+  "dependencies": {
+    "quaternion": "2.0.2"
+  },
+  "devDependencies": {
+    "typescript": "5.8.2",
+    "webpack": "5.98.0",
+    "webpack-cli": "6.0.1",
+    "ts-loader": "9.5.2"
+  },
+  "license": "MIT"
+}

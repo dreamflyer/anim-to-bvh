@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload .anim File</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        .info {
+            font-size: 14px;
+            color: #333;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ccc;
+        }
+        .download-btn, .reload-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .download-btn.active {
+            cursor: pointer;
+            opacity: 1;
+        }
+        .reload-btn {
+            background-color: #28a745;
+            cursor: pointer;
+            opacity: 1;
+        }
+        .success-message {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 20px;
+        }
+		.wallet-container {
+		    margin-top: 10px;
+		    text-align: center;
+		}
+
+		.wallet-label {
+		    font-weight: bold;
+		    font-size: 14px;
+		    margin-bottom: 5px;
+		}
+
+		.wallet-box {
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		    background: #f8f9fa;
+		    border: 1px solid #ccc;
+		    border-radius: 5px;
+		    padding: 5px;
+		    width: fit-content;
+		    margin: 0 auto;
+		}
+
+		#walletAddress {
+		    font-family: monospace;
+		    font-size: 14px;
+		    color: #333;
+		    margin-right: 8px;
+		}
+
+		#copyWalletBtn {
+		    background: #007bff;
+		    color: white;
+		    border: none;
+		    padding: 5px 8px;
+		    border-radius: 5px;
+		    cursor: pointer;
+		    font-size: 14px;
+		}
+
+		#copyWalletBtn:hover {
+		    background: #0056b3;
+		}
+
+		.sl-store {
+		    display: block;
+		    text-align: center;
+		    background: #28a745;
+		    color: white;
+		    text-decoration: none;
+		    padding: 10px;
+		    border-radius: 5px;
+		    font-size: 16px;
+		    font-weight: bold;
+		    margin-top: 10px;
+		}
+
+		.sl-store:hover {
+		    background: #218838;
+		}
+    </style>
+	<script src="./dist/bundle.js"></script>
+</head>
+<body>
+    <div id="upload-section">
+        <h3>Upload .anim File</h3>
+
+        <label>
+            Select .anim file:
+            <input type="file" id="animFile" accept=".anim, .asset">
+        </label>
+
+       <label>
+            <input type="radio" name="offsetMode" value="default_male" checked>
+            Use default offsets(Male)
+        </label>
+		
+		<label>
+			<input type="radio" name="offsetMode" value="default_female">
+			Use default offsets(Female)
+		</label>
+
+        <label>
+            <input type="radio" name="offsetMode" value="custom">
+            Copy offsets from donor BVH
+        </label>
+
+        <label id="bvhUpload" class="hidden">
+            Select donor .bvh file:
+            <input type="file" id="bvhFile" accept=".bvh">
+        </label>
+
+        <button id="downloadBtn" class="download-btn" disabled>Download</button>
+
+        <p class="info">
+            Anim files do not contain offset information. Therefore, for correct import of the resulting BVH into Avastar 
+            (offsets are not needed for SL), it is recommended to copy the offsets from your character in Blender.
+            To obtain a donor BVH, export any animation of your character (it doesn't matter which one—even a static T-pose will work),
+            ensuring that all bones are included. However, if you are using a standard avatar (or something close to it), 
+            you can select the "Use default offsets" option—this way, no additional steps will be required.
+        </p>
+    </div>
+	
+	<div id="success-section" class="hidden">
+	    <p class="success-message">🎉 Your file has been successfully processed!</p>
+	    <p>❤️ If you like this tool and want to support me, consider making a donation!</p>
+
+	    <div class="wallet-container">
+	        <p class="wallet-label">USDT (TRC20):</p>
+	        <div class="wallet-box">
+	            <span id="walletAddress">TB1uw4eczKf5wpMcXHAmNE795fhRuJxUBx</span>
+	            <button id="copyWalletBtn">📋 Copy</button>
+	        </div>
+	    </div>
+
+	    <a href="https://marketplace.secondlife.com/en-US/stores/207879" class="sl-store" target="_blank">
+	        🛒 Visit My Second Life Store
+	    </a>
+
+	    <button id="reloadBtn" class="reload-btn">Upload Another File</button>
+	</div>
+
+    <script>
+        const uploadSection = document.getElementById("upload-section");
+        const successSection = document.getElementById("success-section");
+
+        const animFileInput = document.getElementById("animFile");
+        const bvhFileInput = document.getElementById("bvhFile");
+        const bvhUpload = document.getElementById("bvhUpload");
+        const downloadBtn = document.getElementById("downloadBtn");
+        const radios = document.querySelectorAll('input[name="offsetMode"]');
+        const reloadBtn = document.getElementById("reloadBtn");
+
+        function checkFiles() {
+            const isAnimSelected = animFileInput.files.length > 0;
+            const isBvhRequired = document.querySelector('input[name="offsetMode"]:checked').value === "custom";
+            const isBvhSelected = !isBvhRequired || (bvhFileInput.files.length > 0);
+            
+            if (isAnimSelected && isBvhSelected) {
+                downloadBtn.classList.add("active");
+                downloadBtn.disabled = false;
+            } else {
+                downloadBtn.classList.remove("active");
+                downloadBtn.disabled = true;
+            }
+        }
+
+        radios.forEach(radio => {
+            radio.addEventListener("change", function () {
+                bvhUpload.classList.toggle("hidden", this.value !== "custom");
+                checkFiles();
+            });
+        });
+
+        animFileInput.addEventListener("change", checkFiles);
+        bvhFileInput.addEventListener("change", checkFiles);
+
+        downloadBtn.addEventListener("click", function () {
+			if(!downloadBtn.disabled) {
+				const animReader = new FileReader();
+				
+				animReader.addEventListener('load', readAnim);
+				
+				if(animFileInput.files && animFileInput.files[0]) {
+					animReader.readAsArrayBuffer(animFileInput.files[0]);
+				}
+            }
+        });
+
+        reloadBtn.addEventListener("click", function () {
+            location.reload();
+        });
+		
+		let bvhData;
+		
+		function readAnim(event) {
+			const fileReader = event.target;
+			
+			const arrayBuffer = fileReader.result;
+		    
+			const animData = AnimToBvh.parseAnim(arrayBuffer);
+			
+			const isBvhRequired = document.querySelector('input[name="offsetMode"]:checked').value === "custom";
+			
+			const isMale = document.querySelector('input[name="offsetMode"]:checked').value === "default_male";
+			const isFemale = document.querySelector('input[name="offsetMode"]:checked').value === "default_female";
+			
+			bvhData = AnimToBvh.toBVH(animData);
+			
+			if(isMale) {
+				applyOffsets(bvhData, AnimToBvh.maleOffsets);
+			}
+			
+			if(isFemale) {
+				applyOffsets(bvhData, AnimToBvh.femaleOffsets);
+			}
+			
+			if(!isBvhRequired) {
+				uploadSection.classList.add("hidden");
+				
+				successSection.classList.remove("hidden");
+				
+				downloadStringAsFile(AnimToBvh.serializeBVH(bvhData), "animation.bvh");
+			} else {
+				const bvhReader = new FileReader();
+				
+				bvhReader.addEventListener('load', readBvh);
+				
+				if(bvhFileInput.files && bvhFileInput.files[0]) {
+					bvhReader.readAsText(bvhFileInput.files[0]);
+				}
+			}
+		}
+		
+		function collectOffsets(bvhNode) {
+			const result = {};
+			
+			AnimToBvh.visitNode(bvhNode, node => {
+				if(node.children && node.children.length && (node.children[0].bvhName == "end")) {
+					node.children[0].parentName = node.bvhName;
+				}
+				
+				if(node.bvhName == "end") {
+					result["end_" + node.parentName] = node.offset;
+					
+					return;
+				}
+				
+				result[node.bvhName] = node.offset;
+			});
+			
+			return result;
+		}
+		
+		function applyOffsets(bvhNode, offsets) {
+			AnimToBvh.visitNode(bvhNode, node => {
+				if(node.children && node.children.length && (node.children[0].bvhName == "end")) {
+					node.children[0].parentName = node.bvhName;
+				}
+				
+				let ofssetName = node.bvhName;
+				
+				if(name == "end") {
+					ofssetName = "end_" + node.parentName;
+				}
+				
+				if(offsets[ofssetName]) {
+					node.offset = offsets[ofssetName];
+				}
+			});
+		}
+		
+		function readBvh(event) {
+			const fileReader = event.target;
+			
+			const bvhDonorData = AnimToBvh.parseBVH(fileReader.result);
+			
+			const offsets = collectOffsets(bvhDonorData);
+			
+			applyOffsets(bvhData, offsets);
+			
+			uploadSection.classList.add("hidden");
+			
+			successSection.classList.remove("hidden");
+			
+			downloadStringAsFile(AnimToBvh.serializeBVH(bvhData), "animation.bvh");
+		}
+		
+		function downloadStringAsFile(content, filename, mimeType) {
+		    const blob = new Blob([content], { type: mimeType });
+		    const url = URL.createObjectURL(blob);
+
+		    const a = document.createElement("a");
+			
+		    a.href = url;
+		    a.download = filename;
+		    document.body.appendChild(a);
+		    a.click();
+
+		    document.body.removeChild(a);
+		    URL.revokeObjectURL(url);
+		}
+		
+		document.getElementById("copyWalletBtn").addEventListener("click", function () {
+		    const walletText = document.getElementById("walletAddress").textContent;
+		    navigator.clipboard.writeText(walletText).then(() => {
+		        alert("Wallet address copied to clipboard!");
+		    });
+		});
+    </script>
+</body>
+</html>
