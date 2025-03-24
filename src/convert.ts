@@ -10,12 +10,24 @@ function offsetToString(offset: Vector3, digits: number): string {
 	return "OFFSET " + floatToString(offset.x, digits) + " " + floatToString(offset.y, digits) + " " + floatToString(offset.z, digits);
 }
 
+function channelsString(node: BVHNode): string {
+	if(!node.channels) {
+		return "";
+	}
+	
+	if(node.bvhName === "hip") {
+		return "CHANNELS 6 Xposition Yposition Zposition Xrotation Yrotation Zrotation";
+	}
+	
+	return "CHANNELS " + node.channels.length + " " + node.channels.join(" ");
+}
+
 function appendNode(joint: BVHNode, tabs: string): string {
 	let result = "";
 	
 	const boneType = (joint.bvhName === "hip") ? "ROOT" : "JOINT";
 	
-	const channels = (joint.bvhName === "hip") ? "CHANNELS 6 Xposition Yposition Zposition Xrotation Yrotation Zrotation" : "CHANNELS 3 Xrotation Yrotation Zrotation";
+	const channels = channelsString(joint);
 	
 	const offset = (joint.bvhName === "hip") ? offsetToString(joint.offset, 6) : offsetToString(joint.offset, 4);
 	
@@ -131,6 +143,12 @@ function fillChannels(node: any, joint: any): void {
 	node.channels.push("Zrotation");
 }
 
+function animPositionToBvh(position: Vector3): Vector3 {
+	const multiplier = 39.3795;
+	
+	return {x: position.y * multiplier, y: position.z * multiplier, z: position.x * multiplier}
+}
+
 function fillKeyFrames(data: AnimData, bvhNode: BVHNode, fps: number): void {
 	const animJoints: any[] = data.joints;
 	
@@ -159,7 +177,7 @@ function fillKeyFrames(data: AnimData, bvhNode: BVHNode, fps: number): void {
 				});
 			}
 			
-			const positions: Vector3[] = lerpValues(node.animFrames.map((item: any) => item.position), fixedAnimTimes, bvhTimes, lerpVector);
+			const positions: Vector3[] = lerpValues(node.animFrames.map((item: any) => animPositionToBvh(item.position)), fixedAnimTimes, bvhTimes, lerpVector);
 			const rotations: Vector3[] = lerpValues(node.animFrames.map((item: any) => toQuaternion(item.rotation)), fixedAnimTimes, bvhTimes, lerpQuaternion).map(item => quaternionToEulers(item));
 			
 			node.bvhFrames = [];

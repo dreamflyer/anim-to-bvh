@@ -344,10 +344,23 @@
 		
 		document.getElementById("copyWalletBtn").addEventListener("click", function () {
 		    const walletText = document.getElementById("walletAddress").textContent;
+			
 		    navigator.clipboard.writeText(walletText).then(() => {
 		        alert("Wallet address copied to clipboard!");
 		    });
 		});
+		
+		function findNode(bvhNode, name) {
+			let result;
+			
+			AnimToBvh.visitNode(bvhNode, (node) => {
+				if(node.bvhName == name) {
+					result = node;
+				}
+			});
+			
+			return result;
+		}
     </script>
 </body>
 </html>
