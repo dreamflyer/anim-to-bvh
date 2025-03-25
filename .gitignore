@@ -17,3 +17,6 @@ logs/
 *.rar
 *.7z
 *.bak
+.settings/org.eclipse.core.resources.prefs
+
+.project
