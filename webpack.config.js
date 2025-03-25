@@ -8,6 +8,7 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     publicPath: "/",
 	library: "AnimToBvh",
+	globalObject: "typeof self !== 'undefined' ? self : this",
 	libraryTarget: "umd"
   },
 

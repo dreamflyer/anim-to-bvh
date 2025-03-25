@@ -1,8 +1,8 @@
 {
   "name": "anim-to-bvh",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Anim to BVH converter(mostly for Second Life, including Bento bones). Anim, BVH parsers.",
-  "main": "dist/index.js",
+  "main": "dist/bundle.js",
   "scripts": {
     "build": "tsc & webpack",
     "watch": "tsc --watch"
@@ -16,6 +16,7 @@
   	"type": "git",
   	"url": "git@github.com:dreamflyer/anim-to-bvh.git"
   },
+  
   "dependencies": {
     "quaternion": "2.0.2"
   },
