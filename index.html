@@ -352,6 +352,8 @@
 			
 		    navigator.clipboard.writeText(walletText).then(() => {
 		        alert("Wallet address copied to clipboard!");
+
+			dataLayer.push({"event": "copy-btn-click"});
 		    });
 		});
 		
