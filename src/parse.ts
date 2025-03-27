@@ -185,7 +185,7 @@ function compose(node: any, name: string): any {
 	}
 	
 	if(node.CHANNELS) {
-		const channels: any = node.CHANNELS.trim().split(" ").filter((item: any) => isNaN(parseFloat(item)));
+		const channels: any = node.CHANNELS.trim().split(" ").map((item: any) => item.trim()).filter((item: any) => !!item).filter((item: any) => isNaN(parseFloat(item)));
 		
 		result.channels = channels;
 	}
@@ -262,11 +262,11 @@ export function distributeSingleFrame(hierarchy: BVHNode, frame: number[]) {
 }
 
 export function parseBVH(text: string): BVHNode {
-	const parts: string[] = text.split("MOTION");
+	const parts: string[] = text.replaceAll("\r", "").replaceAll("\t", " ").split("MOTION");
 	
 	let result = parts[0].split("HIERARCHY")[1];
 	
-	"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("").forEach(item => {
+	"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ".split("").forEach(item => {
 		result = result.replaceAll(item + "\n", item + "\",\n");
 	});
 	
