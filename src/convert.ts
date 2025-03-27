@@ -245,10 +245,10 @@ export function serializeBVH(bvhNode: BVHNode): string {
 	return result;
 }
 
-export function toBVH(data: AnimData): BVHNode {
+export function toBVH(data: AnimData, fps: number = 24): BVHNode {
 	const bvhNode: BVHNode = <BVHNode><any>subTree(data.joints);
 	
-	fillKeyFrames(data, bvhNode, 24);
+	fillKeyFrames(data, bvhNode, fps);
 		
 	return bvhNode;
 }

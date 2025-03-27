@@ -140,8 +140,13 @@
             Select .anim file:
             <input type="file" id="animFile" accept=".anim, .asset">
         </label>
+		
+		<label>
+			Serialization Frame Rate:
+			<input type="number" id="fps" value="24" min="1" max="250">
+		</label>
 
-       <label>
+        <label>
             <input type="radio" name="offsetMode" value="default_male" checked>
             Use default offsets(Male)
         </label>
@@ -211,6 +216,10 @@
                 downloadBtn.disabled = true;
             }
         }
+		
+		function getFPS() {
+			return parseInt(document.getElementById("fps").value || 24);
+		}
 
         radios.forEach(radio => {
             radio.addEventListener("change", function () {
@@ -252,7 +261,7 @@
 			const isMale = document.querySelector('input[name="offsetMode"]:checked').value === "default_male";
 			const isFemale = document.querySelector('input[name="offsetMode"]:checked').value === "default_female";
 			
-			bvhData = AnimToBvh.toBVH(animData);
+			bvhData = AnimToBvh.toBVH(animData, getFPS());
 			
 			if(isMale) {
 				applyOffsets(bvhData, AnimToBvh.maleOffsets);
