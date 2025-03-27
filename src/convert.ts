@@ -235,8 +235,8 @@ export function serializeBVH(bvhNode: BVHNode): string {
 	
 	result += appendNode(bvhNode, "");
 	result += "MOTION\n";
-	result += "Frames " + bvhNode.bvhTimes!.length + "\n";
-	result += "Frame Time " + floatToString(bvhNode.bvhTimes![1], 6) + "\n";
+	result += "Frames: " + bvhNode.bvhTimes!.length + "\n";
+	result += "Frame Time: " + floatToString(bvhNode.bvhTimes![1], 6) + "\n";
 	
 	for(let i = 0; i < bvhNode.bvhTimes!.length; i++) {
 		result += getFrameRow(bvhNode, i);
