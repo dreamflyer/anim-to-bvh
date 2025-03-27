@@ -1,6 +1,6 @@
 {
   "name": "anim-to-bvh",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Anim to BVH converter(mostly for Second Life, including Bento bones). Anim, BVH parsers.",
   "main": "dist/bundle.js",
   "scripts": {
