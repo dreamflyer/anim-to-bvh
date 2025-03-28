@@ -154,7 +154,7 @@ function fillKeyFrames(data: AnimData, bvhNode: BVHNode, fps: number): void {
 	
 	const length: number = extractFramesLength(animJoints);
 	
-	const bvhTimes: number[] = getUniformTimes(data.duration, 1 / fps);
+	const bvhTimes: number[] = getUniformTimes(data.duration || 0.5, 1 / fps);
 	
 	visitNode(bvhNode, (node) => {
 		const joint: AnimJoint = animJoints.find((item: any) => aliases[item.joint_name] === node.bvhName);
@@ -242,7 +242,7 @@ export function serializeBVH(bvhNode: BVHNode): string {
 
 export function toBVH(data: AnimData, fps: number = 24): BVHNode {
 	const bvhNode: BVHNode = <BVHNode><any>subTree(data.joints);
-	
+		
 	fillKeyFrames(data, bvhNode, fps);
 		
 	return bvhNode;
