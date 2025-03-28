@@ -31,20 +31,24 @@ export interface BVHFrame {
 	rotation: Vector3;
 	time?: number;
 }
+export interface AnimKeys {
+	positions: AnimKey[];
+	rotations: AnimKey[];
+}
 export interface BVHNode {
 	bvhName: string;
 	channels?: string[];
 	bvhTimes?: number[];
 	children?: BVHNode[];
 	offset: Vector3;
-	animFrames?: BVHFrame[];
+	animKeys?: AnimKeys;
 	bvhFrames: BVHFrame[];
 }
 export declare function parseAnim(arrayBuffer: ArrayBuffer): AnimData;
 export declare function parseBVH(text: string): BVHNode;
 export declare function visitNode(node: BVHNode, visitor: (node: BVHNode) => void, childrenFirst?: boolean): void;
 export declare function serializeBVH(bvhNode: BVHNode): string;
-export declare function toBVH(data: AnimData): BVHNode;
+export declare function toBVH(data: AnimData, fps?: number): BVHNode;
 export declare const femaleOffsets: {
 	[key: string]: Vector3;
 };

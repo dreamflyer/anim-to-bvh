@@ -1,4 +1,4 @@
-import {Vector3, AnimData, AnimJoint, BVHNode} from "./model";
+import {AnimData, AnimJoint, AnimKey, BVHNode, Vector3} from "./model";
 import {append, toQuaternion, lerpValues, getUniformTimes, clipTimesToClosestBVHTime, lerpVector, lerpQuaternion, quaternionToEulers, floatToString} from "./utils";
 
 import {hierarchy} from "./hierarchy";
@@ -153,11 +153,8 @@ function fillKeyFrames(data: AnimData, bvhNode: BVHNode, fps: number): void {
 	const animJoints: any[] = data.joints;
 	
 	const length: number = extractFramesLength(animJoints);
-	const animTimes: number[] = extractTimes(animJoints);
 	
 	const bvhTimes: number[] = getUniformTimes(data.duration, 1 / fps);
-	
-	const fixedAnimTimes: number[] = clipTimesToClosestBVHTime(animTimes, bvhTimes);
 	
 	visitNode(bvhNode, (node) => {
 		const joint: AnimJoint = animJoints.find((item: any) => aliases[item.joint_name] === node.bvhName);
@@ -167,23 +164,21 @@ function fillKeyFrames(data: AnimData, bvhNode: BVHNode, fps: number): void {
 		if(node.bvhName != "end") {
 			fillChannels(node, joint);
 			
-			node.animFrames = [];
-			
-			for(let i = 0; i < length; i++) {
-				node.animFrames.push({
-					position: joint?.position_keys[i] || {x: 0, y:0, z: 0},
-					rotation: joint?.rotation_keys[i] || {x: 0, y:0, z: 0},
-					time: animTimes[i]
-				});
+			node.animKeys = {
+				positions: joint?.position_keys || [],
+				rotations: joint?.rotation_keys || []
 			}
 			
-			const positions: Vector3[] = lerpValues(node.animFrames.map((item: any) => animPositionToBvh(item.position)), fixedAnimTimes, bvhTimes, lerpVector);
-			const rotations: Vector3[] = lerpValues(node.animFrames.map((item: any) => toQuaternion(item.rotation)), fixedAnimTimes, bvhTimes, lerpQuaternion).map(item => quaternionToEulers(item));
+			const positionTimes: number[] = clipTimesToClosestBVHTime(node.animKeys.positions.map((item: AnimKey) => item.time), bvhTimes);
+			const rotationTimes: number[] = clipTimesToClosestBVHTime(node.animKeys.rotations.map((item: AnimKey) => item.time), bvhTimes);
 			
+			const positions: Vector3[] = lerpValues(node.animKeys.positions.map((item: any) => animPositionToBvh(item)), positionTimes, bvhTimes, {x: 0, y: 0, z: 0},lerpVector);
+			const rotations: Vector3[] = lerpValues(node.animKeys.rotations.map((item: any) => toQuaternion(item)), rotationTimes, bvhTimes, new Quaternion(), lerpQuaternion).map(item => quaternionToEulers(item));
+						
 			node.bvhFrames = [];
-			
-			positions.forEach((item: any, i: number) => node.bvhFrames.push({
-				position: item,
+						
+			bvhTimes.forEach((item: number, i: number) => node.bvhFrames.push({
+				position: positions[i],
 				rotation: rotations[i]
 			}));
 		}

@@ -34,12 +34,17 @@ export interface BVHFrame {
 	time?: number;
 }
 
+export interface AnimKeys {
+	positions: AnimKey[];
+	rotations: AnimKey[];
+}
+
 export interface BVHNode {
 	bvhName: string;
 	channels?: string[]; 
 	bvhTimes?: number[];
 	children?: BVHNode[];
 	offset: Vector3;
-	animFrames?: BVHFrame[];
+	animKeys?: AnimKeys;
 	bvhFrames: BVHFrame[]
 }

@@ -176,8 +176,18 @@ export function lerpQuaternion(leftValue: Quaternion, rightValue: Quaternion, fa
 	return leftValue.slerp(rightValue)(factor);
 }
 
-export function lerpValues<T>(values: T[], animTimes: number[], uniformTimes: number[], lerpFunction: (leftValue: T, rightValue: T, factor: number) => T): T[] {
-	return getFactors(uniformTimes, animTimes).map(item => {
+export function lerpValues<T>(values: T[], animTimes: number[], uniformTimes: number[], defaultValue: T, lerpFunction: (leftValue: T, rightValue: T, factor: number) => T): T[] {
+	if(!values?.length) {
+		return uniformTimes.map(item => defaultValue);
+	}
+	
+	if(values.length == 1) {
+		return uniformTimes.map(item => values[0]);
+	}
+	
+	const factors: any[] = getFactors(uniformTimes, animTimes);
+	
+	return factors.map(item => {
 		const leftFrame: T = values[item.leftAnimIndex];
 		const rightFrame: T = values[item.rightAnimIndex];
 		
