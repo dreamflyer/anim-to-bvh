@@ -46,5 +46,6 @@ export interface BVHNode {
 	children?: BVHNode[];
 	offset: Vector3;
 	animKeys?: AnimKeys;
-	bvhFrames: BVHFrame[]
+	bvhFrames: BVHFrame[];
+	parentName?: string;
 }
