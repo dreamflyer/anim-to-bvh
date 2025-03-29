@@ -1,6 +1,6 @@
 {
   "name": "anim-to-bvh",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Anim to BVH converter(mostly for Second Life, including Bento bones). Anim, BVH parsers.",
   "main": "dist/bundle.js",
   "scripts": {
@@ -26,5 +26,6 @@
     "webpack-cli": "6.0.1",
     "ts-loader": "9.5.2"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": ["anim", "bvh", "parse", "convert", "avastar", "blender"]
 }
