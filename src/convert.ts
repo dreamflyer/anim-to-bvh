@@ -1,4 +1,4 @@
-import {AnimData, AnimJoint, AnimKey, BVHNode, Vector3} from "./model";
+import {AnimData, AnimJoint, AnimKey, BVHNode, BVHFrame, Vector3} from "./model";
 import {append, toQuaternion, lerpValues, getUniformTimes, clipTimesToClosestBVHTime, lerpVector, lerpQuaternion, quaternionToEulers, floatToString} from "./utils";
 
 import {hierarchy} from "./hierarchy";
@@ -154,7 +154,7 @@ function fillKeyFrames(data: AnimData, bvhNode: BVHNode, fps: number): void {
 	
 	const length: number = extractFramesLength(animJoints);
 	
-	const bvhTimes: number[] = getUniformTimes(data.duration || 0.5, 1 / fps);
+	const bvhTimes: number[] = getUniformTimes(data.duration || 2, 1 / fps);
 	
 	visitNode(bvhNode, (node) => {
 		const joint: AnimJoint = animJoints.find((item: any) => aliases[item.joint_name] === node.bvhName);
@@ -246,4 +246,43 @@ export function toBVH(data: AnimData, fps: number = 24): BVHNode {
 	fillKeyFrames(data, bvhNode, fps);
 		
 	return bvhNode;
+}
+
+export function collectOffsets(bvhNode: BVHNode): {[name: string]: Vector3} {
+	const result: {[name: string]: Vector3} = {};
+	
+	visitNode(bvhNode, node => {
+		if(node.children && node.children.length && (node.children[0].bvhName == "end")) {
+			node.children[0].parentName = node.bvhName;
+		}
+		
+		if(node.bvhName == "end") {
+			result["end_" + node.parentName] = node.offset;
+			
+			return;
+		}
+		
+		result[node.bvhName] = node.offset;
+	});
+	
+	return result;
+}
+
+export function collectReferenceFrame(bvhNode: BVHNode): {[name: string]: BVHFrame} {
+	const result: {[name: string]: BVHFrame} = {};
+	
+	visitNode(bvhNode, node => {
+		if(node.bvhName == "end") {
+			return;
+		}
+		
+		const frame: BVHFrame = {
+			position: node.bvhFrames?.[0]?.position || {x: 0, y: 0, z: 0},
+			rotation: node.bvhFrames?.[0]?.rotation || {x: 0, y: 0, z: 0}
+		}
+		
+		result[node.bvhName] = frame;
+	});
+	
+	return result;
 }

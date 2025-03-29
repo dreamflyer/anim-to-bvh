@@ -145,6 +145,11 @@
 			Serialization Frame Rate:
 			<input type="number" id="fps" value="24" min="1" max="250">
 		</label>
+		
+		<label>
+			Generate reference frame:
+			<input type="checkbox" id="reference_frame">
+		</label>
 
         <label>
             <input type="radio" name="offsetMode" value="default_male" checked>
@@ -207,7 +212,7 @@
             const isAnimSelected = animFileInput.files.length > 0;
             const isBvhRequired = document.querySelector('input[name="offsetMode"]:checked').value === "custom";
             const isBvhSelected = !isBvhRequired || (bvhFileInput.files.length > 0);
-            
+			            
             if (isAnimSelected && isBvhSelected) {
                 downloadBtn.classList.add("active");
                 downloadBtn.disabled = false;
@@ -261,21 +266,31 @@
 			const isMale = document.querySelector('input[name="offsetMode"]:checked').value === "default_male";
 			const isFemale = document.querySelector('input[name="offsetMode"]:checked').value === "default_female";
 			
+			const isReferenceFrameSelected = document.getElementById("reference_frame").checked;
+			
 			bvhData = AnimToBvh.toBVH(animData, getFPS());
 			
 			if(isMale) {
-				applyOffsets(bvhData, AnimToBvh.maleOffsets);
+				applyOffsets(bvhData, AnimToBvh.defaultMaleBVH);
+				
+				if(isReferenceFrameSelected) {
+					addReferenceFrame(bvhData, AnimToBvh.defaultMaleBVH);
+				}
 			}
 			
 			if(isFemale) {
-				applyOffsets(bvhData, AnimToBvh.femaleOffsets);
+				applyOffsets(bvhData, AnimToBvh.defaultFemaleBVH);
+				
+				if(isReferenceFrameSelected) {
+					addReferenceFrame(bvhData, AnimToBvh.defaultFemaleBVH);
+				}
 			}
 			
 			if(!isBvhRequired) {
 				uploadSection.classList.add("hidden");
 				
 				successSection.classList.remove("hidden");
-				
+								
 				downloadStringAsFile(AnimToBvh.serializeBVH(bvhData), "animation.bvh");
 			} else {
 				const bvhReader = new FileReader();
@@ -288,27 +303,9 @@
 			}
 		}
 		
-		function collectOffsets(bvhNode) {
-			const result = {};
+		function applyOffsets(bvhNode, donorBVH) {
+			const offsets = AnimToBvh.collectOffsets(donorBVH);
 			
-			AnimToBvh.visitNode(bvhNode, node => {
-				if(node.children && node.children.length && (node.children[0].bvhName == "end")) {
-					node.children[0].parentName = node.bvhName;
-				}
-				
-				if(node.bvhName == "end") {
-					result["end_" + node.parentName] = node.offset;
-					
-					return;
-				}
-				
-				result[node.bvhName] = node.offset;
-			});
-			
-			return result;
-		}
-		
-		function applyOffsets(bvhNode, offsets) {
 			AnimToBvh.visitNode(bvhNode, node => {
 				if(node.children && node.children.length && (node.children[0].bvhName == "end")) {
 					node.children[0].parentName = node.bvhName;
@@ -326,14 +323,39 @@
 			});
 		}
 		
+		function addReferenceFrame(bvhNode, donorBVH) {
+			const frame = AnimToBvh.collectReferenceFrame(donorBVH);
+			
+			bvhNode.bvhTimes.push(bvhNode.bvhTimes[bvhNode.bvhTimes.length - 1]);
+			
+			AnimToBvh.visitNode(bvhNode, node => {
+				if(node.bvhName == "end") {
+					return;
+				}
+				
+				const bvhFrame = frame[node.bvhName] || {
+					position: {x: 0, y: 0, z: 0},
+					rotation: {x: 0, y: 0, z: 0}
+				};
+				
+				node.bvhFrames.unshift(bvhFrame);
+			});
+		}
+		
 		function readBvh(event) {
 			const fileReader = event.target;
 			
 			const bvhDonorData = AnimToBvh.parseBVH(fileReader.result);
 			
-			const offsets = collectOffsets(bvhDonorData);
+			const offsets = AnimToBvh.collectOffsets(bvhDonorData);
 			
 			applyOffsets(bvhData, offsets);
+			
+			const isReferenceFrameSelected = document.getElementById("reference_frame").checked;
+			
+			if(isReferenceFrameSelected) {
+				addReferenceFrame(bvhData, bvhDonorData);
+			}
 			
 			uploadSection.classList.add("hidden");
 			
