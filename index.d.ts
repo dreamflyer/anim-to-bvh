@@ -43,17 +43,25 @@ export interface BVHNode {
 	offset: Vector3;
 	animKeys?: AnimKeys;
 	bvhFrames: BVHFrame[];
+	parentName?: string;
 }
 export declare function parseAnim(arrayBuffer: ArrayBuffer): AnimData;
 export declare function parseBVH(text: string): BVHNode;
 export declare function visitNode(node: BVHNode, visitor: (node: BVHNode) => void, childrenFirst?: boolean): void;
 export declare function serializeBVH(bvhNode: BVHNode): string;
 export declare function toBVH(data: AnimData, fps?: number): BVHNode;
-export declare const femaleOffsets: {
-	[key: string]: Vector3;
+export declare function collectOffsets(bvhNode: BVHNode): {
+	[name: string]: Vector3;
 };
-export declare const maleOffsets: {
-	[key: string]: Vector3;
+export declare function collectReferenceFrame(bvhNode: BVHNode): {
+	[name: string]: BVHFrame;
+};
+declare const male: BVHNode;
+declare const female: BVHNode;
+
+export {
+	female as defaultFemaleBVH,
+	male as defaultMaleBVH,
 };
 
 export {};
