@@ -340,6 +340,16 @@
 				
 				node.bvhFrames.unshift(bvhFrame);
 			});
+			
+			const firstHipFrame = bvhNode.bvhFrames[0];
+			
+			for(let i = 1; i < bvhNode.bvhFrames.length; i++) {
+				const hipFrame = bvhNode.bvhFrames[i];
+				
+				hipFrame.position.x = hipFrame.position.x + firstHipFrame.position.x;
+				hipFrame.position.y = hipFrame.position.y + firstHipFrame.position.y;
+				hipFrame.position.z = hipFrame.position.z + firstHipFrame.position.z;
+			}
 		}
 		
 		function readBvh(event) {
@@ -347,9 +357,7 @@
 			
 			const bvhDonorData = AnimToBvh.parseBVH(fileReader.result);
 			
-			const offsets = AnimToBvh.collectOffsets(bvhDonorData);
-			
-			applyOffsets(bvhData, offsets);
+			applyOffsets(bvhData, bvhDonorData);
 			
 			const isReferenceFrameSelected = document.getElementById("reference_frame").checked;
 			
