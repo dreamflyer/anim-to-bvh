@@ -180,6 +180,9 @@
             ensuring that all bones are included. However, if you are using a standard avatar (or something close to it), 
             you can select the "Use default offsets" option—this way, no additional steps will be required.
         </p>
+        <p style="margin-top: 15px; font-size: 14px; color: #555;">
+        	Feedback, feature requests, or suggestions for similar converters for other platforms are very welcome at <a href="mailto:anim2bvh@proton.me">anim2bvh@proton.me</a>
+        </p>
     </div>
 	
 	<div id="success-section" class="hidden">
@@ -195,6 +198,9 @@
 	    </div>
 
 	    <button id="reloadBtn" class="reload-btn">Upload Another File</button>
+	    <p style="margin-top: 15px; font-size: 14px; color: #555;">
+        	Feedback, feature requests, or suggestions for similar converters for other platforms are very welcome at <a href="mailto:anim2bvh@proton.me">anim2bvh@proton.me</a>
+        </p>
 	</div>
 
     <script>
@@ -245,6 +251,8 @@
 				if(animFileInput.files && animFileInput.files[0]) {
 					animReader.readAsArrayBuffer(animFileInput.files[0]);
 				}
+
+				gtag('event', 'download_btn_click');
             }
         });
 
