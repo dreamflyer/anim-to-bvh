@@ -185,34 +185,38 @@
         </p>
     </div>
 	
-	<div id="success-section" class="hidden">
-	    <p class="success-message">🎉 Your file has been successfully processed!</p>
-	    <p>❤️ If you like this tool and want to support me, consider making a <a href="https://dalink.to/dreamflyer">donation</a>!</p>
+	<div id="success-section" class="hidden"></div>
 
-	    <div class="wallet-container">
-	        <p class="wallet-label">USDT (TRC20):</p>
-	        <div class="wallet-box">
-	            <span id="walletAddress">TB1uw4eczKf5wpMcXHAmNE795fhRuJxUBx</span>
-	            <button id="copyWalletBtn">📋 Copy</button>
-	        </div>
-	    </div>
-	    <p>Or visit my 🛒 <a href="https://marketplace.secondlife.com/en-US/stores/207879" target="_blank">Second Life Store</a></p>
-	    <button id="reloadBtn" class="reload-btn">Upload Another File</button>
-	    <p style="margin-top: 15px; font-size: 14px; color: #555;">
-        	Feedback, feature requests, or suggestions for similar converters for other platforms(such as Unity or Unreal Engine 5) are very welcome at <a href="mailto:anim2bvh@proton.me">anim2bvh@proton.me</a>
-        </p>
-	</div>
+	<script>
+		document.addEventListener("DOMContentLoaded", () => {
+			const encoded = `CjxkaXYgaWQ9InN1Y2Nlc3Mtc2VjdGlvbiIgY2xhc3M9ImhpZGRlbiI+IDxwIGNsYXNzPSJzdWNjZXNzLW1lc3NhZ2UiPvCfjokgWW91ciBmaWxlIGhhcyBiZWVuIHN1Y2Nlc3NmdWxseSBwcm9jZXNzZWQhPC9wPiA8cD7inaTvuI8gSWYgeW91IGxpa2UgdGhpcyB0b29sIGFuZCB3YW50IHRvIHN1cHBvcnQgbWUsIGNvbnNpZGVyIG1ha2luZyBhIDxhIGhyZWY9Imh0dHBzOi8vZGFsaW5rLnRvL2RyZWFtZmx5ZXIiPmRvbmF0aW9uPC9hPiE8L3A+IDxkaXYgY2xhc3M9IndhbGxldC1jb250YWluZXIiPiA8cCBjbGFzcz0id2FsbGV0LWxhYmVsIj5VU0RUIChUUkMyMCk6PC9wPiA8ZGl2IGNsYXNzPSJ3YWxsZXQtYm94Ij4gPHNwYW4gaWQ9IndhbGxldEFkZHJlc3MiPlRCMXV3NGVjektmNXdwTWNYSEFtTkU3OTVmaFJ1SnhVQng8L3NwYW4+IDxidXR0b24gaWQ9ImNvcHlXYWxsZXRCdG4iPvCfk4sgQ29weTwvYnV0dG9uPiA8L2Rpdj4gPC9kaXY+IDxwPk9yIHZpc2l0IG15IPCfm5IgPGEgaHJlZj0iaHR0cHM6Ly9tYXJrZXRwbGFjZS5zZWNvbmRsaWZlLmNvbS9lbi1VUy9zdG9yZXMvMjA3ODc5IiB0YXJnZXQ9Il9ibGFuayI+U2Vjb25kIExpZmUgU3RvcmU8L2E+PC9wPiA8YnV0dG9uIGlkPSJyZWxvYWRCdG4iIGNsYXNzPSJyZWxvYWQtYnRuIj5VcGxvYWQgQW5vdGhlciBGaWxlPC9idXR0b24+IDxwIHN0eWxlPSJtYXJnaW4tdG9wOiAxNXB4OyBmb250LXNpemU6IDE0cHg7IGNvbG9yOiAjNTU1OyI+IEZlZWRiYWNrLCBmZWF0dXJlIHJlcXVlc3RzLCBvciBzdWdnZXN0aW9ucyBmb3Igc2ltaWxhciBjb252ZXJ0ZXJzIGZvciBvdGhlciBwbGF0Zm9ybXMoc3VjaCBhcyBVbml0eSBvciBVbnJlYWwgRW5naW5lIDUpIGFyZSB2ZXJ5IHdlbGNvbWUgYXQgPGEgaHJlZj0ibWFpbHRvOmFuaW0yYnZoQHByb3Rvbi5tZSI+YW5pbTJidmhAcHJvdG9uLm1lPC9hPiA8L3A+IDxwIHN0eWxlPSJtYXJnaW4tdG9wOiAxNXB4OyBmb250LXNpemU6IDE2cHg7IGNvbG9yOiAjNTU1OyI+IE9SIDwvcD4gPGEgaHJlZj0iaHR0cHM6Ly90Lm1lLytnQjRFSHY1Rm11YzFaVGt5IiB0YXJnZXQ9Il9ibGFuayIgcmVsPSJub29wZW5lciBub3JlZmVycmVyIiBzdHlsZT0iZGlzcGxheTppbmxpbmUtYmxvY2s7cGFkZGluZzoxMHB4IDE4cHg7Ym9yZGVyLXJhZGl1czo4cHg7YmFja2dyb3VuZDojMDA4OGNjO2NvbG9yOiNmZmY7dGV4dC1kZWNvcmF0aW9uOm5vbmU7Zm9udC13ZWlnaHQ6NjAwOyI+Sm9pbiBEaXNjdXNzaW9uPC9hPiA8L2Rpdj4K`;
 
-    <script>
-        const uploadSection = document.getElementById("upload-section");
-        const successSection = document.getElementById("success-section");
+			const decoded = new TextDecoder().decode(Uint8Array.from(atob(encoded), c => c.charCodeAt(0)));
+			const container = document.getElementById("success-section");
+			container.outerHTML = decoded;
 
+			document.getElementById("reloadBtn").addEventListener("click", function () {
+				location.reload();
+			});
+
+			document.getElementById("copyWalletBtn").addEventListener("click", function () {
+				const walletText = document.getElementById("walletAddress").textContent;
+
+				navigator.clipboard.writeText(walletText).then(() => {
+					alert("Wallet address copied to clipboard!");
+
+					gtag('event', 'copy_btn_click');
+				});
+			});
+		});
+		
+		const uploadSection = document.getElementById("upload-section");
+        
         const animFileInput = document.getElementById("animFile");
         const bvhFileInput = document.getElementById("bvhFile");
         const bvhUpload = document.getElementById("bvhUpload");
         const downloadBtn = document.getElementById("downloadBtn");
         const radios = document.querySelectorAll('input[name="offsetMode"]');
-        const reloadBtn = document.getElementById("reloadBtn");
 
         function checkFiles() {
             const isAnimSelected = animFileInput.files.length > 0;
@@ -256,10 +260,6 @@
             }
         });
 
-        reloadBtn.addEventListener("click", function () {
-            location.reload();
-        });
-		
 		let bvhData;
 		
 		function readAnim(event) {
@@ -297,7 +297,7 @@
 			if(!isBvhRequired) {
 				uploadSection.classList.add("hidden");
 				
-				successSection.classList.remove("hidden");
+				document.getElementById("success-section").classList.remove("hidden");
 								
 				downloadStringAsFile(AnimToBvh.serializeBVH(bvhData), "animation.bvh");
 			} else {
@@ -375,7 +375,7 @@
 			
 			uploadSection.classList.add("hidden");
 			
-			successSection.classList.remove("hidden");
+			document.getElementById("success-section").classList.remove("hidden");
 			
 			downloadStringAsFile(AnimToBvh.serializeBVH(bvhData), "animation.bvh");
 		}
@@ -394,17 +394,7 @@
 		    document.body.removeChild(a);
 		    URL.revokeObjectURL(url);
 		}
-		
-		document.getElementById("copyWalletBtn").addEventListener("click", function () {
-		    const walletText = document.getElementById("walletAddress").textContent;
-			
-		    navigator.clipboard.writeText(walletText).then(() => {
-		        alert("Wallet address copied to clipboard!");
-
-				gtag('event', 'copy_btn_click');
-		    });
-		});
-		
+				
 		function findNode(bvhNode, name) {
 			let result;
 			
