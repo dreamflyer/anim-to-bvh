@@ -11,6 +11,24 @@
 				return res;
 			};
 		}
+		
+		if(!String.prototype.replaceAll) {
+			String.prototype.replaceAll = function(search, replacement) {
+				const target = this.toString();
+				
+				if(search instanceof RegExp) {
+					if(!search.global) {
+						throw new TypeError("RegExp must have global flag set for replaceAll");
+					}
+					
+					return target.replace(search, replacement);
+				}
+				
+				const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+				return target.replace(new RegExp(escaped, "g"), replacement);
+			};
+		}
+		
 		window.dataLayer = window.dataLayer || [];
 		function gtag(){dataLayer.push(arguments);}
 		gtag('js', new Date());
